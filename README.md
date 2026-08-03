@@ -1,1 +1,1 @@
-# Sistema-de-Gesti-n-y-Log-stica-de-Ceremonias-de-Graduaci-n
+# Sistema-de-Gestion-y-Logistica-de-Ceremonias-de-Graduacion
