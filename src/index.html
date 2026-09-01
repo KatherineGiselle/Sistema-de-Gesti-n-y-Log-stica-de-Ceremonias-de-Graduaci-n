@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Sistema de Gestión y Logística de Ceremonias de Graduación</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">🎓</div>
+      <div class="brand-text">Sistema de Gestión y Logística<br />de Ceremonias de Graduación</div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-view="inicio">Inicio</button>
+      <button class="nav-item" data-view="eventos">Eventos</button>
+      <button class="nav-item" data-view="graduados">Graduados</button>
+      <button class="nav-item" data-view="acceso-qr">Acceso QR</button>
+      <button class="nav-item" data-view="reportes">Reportes</button>
+      <button class="nav-item" data-view="asientos">Asientos</button>
+      <button class="nav-item" data-view="estadisticas">Estadísticas</button>
+      <button class="nav-item" data-view="configuracion">Configuración</button>
+    </nav>
+
+    <button class="logout">Cerrar sesión</button>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div></div>
+      <div class="user-chip">
+        <span id="userName">—</span>
+        <div class="avatar" id="userAvatar"></div>
+      </div>
+    </header>
+
+    <section class="content" id="view-inicio">
+      <div class="content-header">
+        <div>
+          <h1 id="welcomeTitle">¡Bienvenida!</h1>
+          <p class="subtitle">Administra y registra las ceremonias de graduación</p>
+        </div>
+        <div class="event-select">
+          <label>Evento actual:</label>
+          <select id="eventoActual"></select>
+        </div>
+      </div>
+
+      <div class="grid-main">
+        <div class="panel seat-panel">
+          <div class="panel-header">
+            <div class="theater-title">
+              <strong>TECNOLÓGICO NACIONAL DE MÉXICO</strong>
+              <span>INSTITUTO TECNOLÓGICO DE TIJUANA</span>
+            </div>
+            <select class="view-select">
+              <option>Vista por carreras</option>
+              <option>Vista por estatus</option>
+            </select>
+          </div>
+          <div class="stage-label">ESCENARIO</div>
+          <div id="seatMap" class="seat-map"></div>
+          <div class="legend">
+            <span><i class="dot disponible"></i> Disponible</span>
+            <span><i class="dot ocupado"></i> Ocupado</span>
+            <span><i class="dot reservado"></i> Reservado</span>
+            <span><i class="dot bloqueado"></i> Bloqueado</span>
+          </div>
+        </div>
+
+        <div class="stats-col" id="statsCol"></div>
+      </div>
+    </section>
+
+    <section class="content hidden" id="view-placeholder">
+      <div class="content-header">
+        <div>
+          <h1 id="placeholderTitle">Sección</h1>
+          <p class="subtitle">Este módulo se construye con el mismo contrato de datos de mock-data.js</p>
+        </div>
+      </div>
+      <div class="panel empty-state">
+        <p>Aquí va la tabla/formulario de este módulo. Usa <code>window.MOCK_DATA</code> como fuente de datos mientras el backend no esté listo.</p>
+      </div>
+    </section>
+  </div>
+
+  <script src="mock-data.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
