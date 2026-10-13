@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' http: https: ws: wss:;" />
+<title>Sistema de Gestión y Logística de Ceremonias de Graduación</title>
+<link rel="icon" href="assets/icon.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <img class="brand-icon" src="assets/icon.png" alt="Teatro Calafornix" />
+    <div class="brand-text">Sistema de Gestión y Logística<br />de Ceremonias de Graduación</div>
+  </div>
+  <nav class="nav">
+    <button class="nav-item active" data-view="inicio">Inicio</button>
+    <button class="nav-item" data-view="eventos">Eventos</button>
+    <button class="nav-item" data-view="graduados">Graduados</button>
+    <button class="nav-item" data-view="acceso-qr">Acceso QR</button>
+    <button class="nav-item" data-view="reportes">Reportes</button>
+    <button class="nav-item" data-view="asientos">Asientos</button>
+    <button class="nav-item" data-view="estadisticas">Estadísticas</button>
+    <button class="nav-item" data-view="configuracion">Configuración</button>
+  </nav>
+  <button class="logout" id="btnCerrarSesion">Cerrar sesión</button>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div></div>
+    <div class="user-chip"><span id="userName">—</span><div class="avatar"></div></div>
+  </header>
+
+  <!-- ================= INICIO ================= -->
+  <section class="content" id="view-inicio">
+    <div class="content-header">
+      <div><h1 id="welcomeTitle">¡Bienvenida!</h1><p class="subtitle">Administra y registra las ceremonias de graduación</p></div>
+      <div class="event-select"><label>Evento actual:</label><div class="event-picker"><select class="evento-select"></select></div></div>
+    </div>
+    <div class="grid-main">
+      <div class="panel seat-panel">
+        <div class="panel-header">
+          <select id="vistaMapa" class="view-select"><option value="carreras">Vista por carreras</option><option value="estatus">Vista por estatus</option></select>
+          <div class="zoom-controls"><button id="zoomOut" class="zoom-btn" title="Alejar">−</button><button id="zoomIn" class="zoom-btn" title="Acercar">+</button></div>
+        </div>
+        <div class="stage-arch"><div class="stage-logo"><strong>TECNOLÓGICO NACIONAL DE MÉXICO</strong><span>INSTITUTO TECNOLÓGICO DE TIJUANA</span></div></div>
+        <div class="stage-label">FORO</div>
+        <div class="seat-map-wrapper"><div id="seatMapInicio" class="seat-map-theater"></div></div>
+        <div class="legend" id="legendBaseInicio"></div>
+        <div class="legend legend-carreras" id="legendCarrerasInicio"></div>
+      </div>
+      <div class="stats-col" id="statsInicio"></div>
+    </div>
+  </section>
+
+  <!-- ================= EVENTOS ================= -->
+  <section class="content hidden" id="view-eventos">
+    <div class="content-header">
+      <div><h1>Eventos</h1><p class="subtitle">Ceremonias de graduación programadas</p></div>
+      <button id="btnNuevoEvento" class="btn-primary">+ Nuevo evento</button>
+    </div>
+    <div class="panel table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Evento</th><th>Fecha</th><th>Hora</th><th>Departamento (carreras)</th><th class="num">Graduados</th><th class="num">Invitados</th><th class="num">Butacas ocupadas</th><th class="num">Libres</th><th></th></tr></thead>
+        <tbody id="tablaEventos"></tbody>
+      </table>
+    </div>
+    <p class="hint">Butacas ocupadas = graduados + invitados (incluye transmisión en vivo, 3ra edad y padrinos). El teatro tiene 535 butacas.</p>
+  </section>
+
+  <!-- ================= GRADUADOS ================= -->
+  <section class="content hidden" id="view-graduados">
+    <div class="content-header">
+      <div><h1>Graduados</h1><p class="subtitle">Captura manual o carga masiva desde Excel</p></div>
+      <div class="header-actions">
+        <div class="event-select"><label>Ceremonia:</label><div class="event-picker"><select class="evento-select"></select></div></div>
+        <input type="file" id="inputExcel" accept=".xlsx,.xls" hidden />
+        <button id="btnSubirExcel" class="btn-secondary">⬆ Subir Excel (.xlsx)</button>
+        <button id="btnAddGraduado" class="btn-primary">+ Agregar graduado</button>
+      </div>
+    </div>
+    <div class="chips" id="graduadosChips"></div>
+    <div class="panel table-scroll tall">
+      <table class="data-table compacta">
+        <thead><tr><th>Asiento</th><th>Apellido paterno</th><th>Apellido materno</th><th>Nombre(s)</th><th>No. control</th><th>Carrera</th><th class="num">Invitados</th><th>QR</th><th>Asistencia</th><th></th></tr></thead>
+        <tbody id="tablaGraduados"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= ACCESO QR ================= -->
+  <section class="content hidden" id="view-acceso-qr">
+    <div class="content-header">
+      <div><h1>Acceso QR</h1><p class="subtitle">Control de acceso de alumnos e invitados y generación de códigos</p></div>
+      <div class="event-select"><label>Ceremonia:</label><div class="event-picker"><select class="evento-select"></select></div></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="escaneo">Escaneo</button>
+      <button class="tab" data-tab="generar">Generar QR</button>
+    </div>
+
+    <div id="tab-escaneo">
+      <div class="qr-layout">
+        <div class="panel qr-scanner">
+          <div class="scanner-config">
+            <label>Estación<select id="qrEstacion"></select></label>
+            <label>Fuente<select id="qrFuente"><option value="camara">Cámara</option><option value="lector">Lector USB / manual</option></select></label>
+            <label id="qrCamaraWrap">Cámara<select id="qrCamara"></select></label>
+          </div>
+          <div class="qr-frame" id="qrFrame">
+            <video id="qrVideo" playsinline muted></video>
+            <div class="qr-corner tl"></div><div class="qr-corner tr"></div><div class="qr-corner bl"></div><div class="qr-corner br"></div>
+            <div class="qr-scanline" id="qrScanline"></div>
+            <span class="qr-hint" id="qrHint">Cámara apagada</span>
+          </div>
+          <canvas id="qrCanvas" hidden></canvas>
+          <button id="btnCamara" class="btn-primary wide">Iniciar cámara</button>
+          <div class="manual-input">
+            <input id="qrManual" placeholder="Lector USB: escanea aquí · o escribe el código y Enter" autocomplete="off" spellcheck="false" />
+            <button id="btnManual" class="btn-secondary">Validar</button>
+          </div>
+          <button id="btnSimular" class="link-btn">Simular escaneo (demo)</button>
+        </div>
+        <div class="qr-right">
+          <div class="panel qr-result" id="qrResultado"><p class="empty-state">Aún no se ha escaneado ningún código.</p></div>
+          <div class="mini-stats" id="qrMiniStats"></div>
+        </div>
+      </div>
+      <div class="panel table-scroll" style="margin-top:16px;">
+        <h3 style="margin-top:0;">Historial de escaneos</h3>
+        <table class="data-table">
+          <thead><tr><th>Hora</th><th>Estación</th><th>Persona</th><th>Tipo</th><th>Resultado</th></tr></thead>
+          <tbody id="tablaAccesos"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-generar" class="hidden">
+      <div class="panel">
+        <div class="panel-title-row">
+          <div><h3 style="margin:0 0 4px;">Códigos QR por carrera</h3><p class="subtitle">Un QR único para cada alumno y uno por cada invitado. Se descarga un PDF imprimible por carrera.</p></div>
+          <div class="header-actions">
+            <button id="btnGenerarTodos" class="btn-secondary">Generar todos</button>
+            <button id="btnDescargarTodos" class="btn-primary">⬇ Descargar PDF de todas</button>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Carrera</th><th class="num">Alumnos</th><th class="num">Invitados</th><th class="num">QR alumnos</th><th class="num">QR invitados</th><th>Estado</th><th></th></tr></thead>
+          <tbody id="tablaQR"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= REPORTES ================= -->
+  <section class="content hidden" id="view-reportes">
+    <div class="content-header">
+      <div><h1>Reportes</h1><p class="subtitle">Indicadores de asistencia por carrera, generación y evento</p></div>
+      <div class="event-select"><label>Ceremonia:</label><div class="event-picker"><select class="evento-select"></select></div></div>
+    </div>
+    <div class="panel"><h3 class="chart-title">Graduados por ceremonia</h3><div id="chartGraduadosPorEvento"></div></div>
+    <div class="panel" style="margin-top:16px;"><h3 class="chart-title">Asistencia registrada por carrera — ceremonia seleccionada</h3><p class="subtitle" id="reportesInfo" style="margin-bottom:12px;"></p><div id="chartAsistenciaCarrera"></div></div>
+    <div class="panel table-scroll" style="margin-top:16px;">
+      <h3 class="chart-title">Resumen por ceremonia</h3>
+      <table class="data-table">
+        <thead><tr><th>Evento</th><th class="num">Graduados</th><th class="num">Invitados</th><th class="num">Butacas ocupadas</th><th class="num">Libres</th></tr></thead>
+        <tbody id="tablaReportes"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= ASIENTOS ================= -->
+  <section class="content hidden" id="view-asientos">
+    <div class="content-header">
+      <div><h1>Asientos</h1><p class="subtitle">Clic en un asiento gris para nombrar a quien lo ocupa · clic en uno de color para ver al alumno</p></div>
+      <div class="event-select"><label>Ceremonia:</label><div class="event-picker"><select class="evento-select"></select></div></div>
+    </div>
+    <div class="panel seat-panel">
+      <div class="stage-arch small"><div class="stage-logo"><strong>FORO — Teatro Calafornix</strong></div></div>
+      <p class="subtitle center" id="asientosInfo"></p>
+      <div class="seat-map-wrapper"><div id="seatMapAsientos" class="seat-map-theater"></div></div>
+      <div class="legend" id="legendBaseAsientos"></div>
+      <div class="legend legend-carreras" id="legendCarrerasAsientos"></div>
+      <div class="zonas-resumen" id="zonasResumen"></div>
+      <p class="hint">Los invitados se ubican en los asientos disponibles (azules); el contador de “Asientos disponibles” ya los descuenta. Punto oscuro = reservado con nombre · punto blanco = ya ingresó.</p>
+    </div>
+  </section>
+
+  <!-- ================= ESTADÍSTICAS ================= -->
+  <section class="content hidden" id="view-estadisticas">
+    <div class="content-header">
+      <div><h1>Estadísticas</h1><p class="subtitle">Monitoreo en tiempo real y graduados registrados</p></div>
+      <div class="header-actions">
+        <span class="live-badge"><i class="live-dot"></i> En vivo</span>
+        <div class="event-select"><label>Ceremonia:</label><div class="event-picker"><select class="evento-select"></select></div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="progress-header"><span>Asistentes registrados (alumnos + invitados)</span><span id="progresoTexto">0 / 0</span></div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="progresoFill"></div></div>
+    </div>
+    <div class="grid-main" style="margin-top:16px;">
+      <div class="charts-2">
+        <div class="panel"><h3 class="chart-title">Graduados por semestre</h3><div id="chartSemestres"></div></div>
+        <div class="panel"><h3 class="chart-title">Graduados totales registrados (acumulado)</h3><div id="chartAcumulado"></div></div>
+      </div>
+      <div class="stats-col" id="statsEstadisticas"></div>
+    </div>
+  </section>
+
+  <!-- ================= CONFIGURACIÓN ================= -->
+  <section class="content hidden" id="view-configuracion">
+    <div class="content-header"><div><h1>Configuración</h1><p class="subtitle"></p></div></div>
+    <div class="panel empty-state"><p></p></div>
+  </section>
+</div>
+
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="vendor/jsQR.js"></script>
+<script src="vendor/qrcode-generator.js"></script>
+<script src="theater-layout.js"></script>
+<script src="core.js"></script>
+<script src="excel-import.js"></script>
+<script src="mock-backend.js"></script>
+<script src="api.js"></script>
+<script src="qr-utils.js"></script>
+<script src="charts.js"></script>
+<script src="ui-common.js"></script>
+<script src="ui-seatmap.js"></script>
+<script src="ui-inicio.js"></script>
+<script src="ui-eventos.js"></script>
+<script src="ui-graduados.js"></script>
+<script src="ui-asientos.js"></script>
+<script src="ui-qr.js"></script>
+<script src="ui-reportes.js"></script>
+<script src="ui-estadisticas.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

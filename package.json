@@ -1,0 +1,13 @@
+{
+  "name": "graduacion-frontend",
+  "version": "2.0.0",
+  "description": "Frontend de escritorio (Electron) — Sistema de Gestión y Logística de Ceremonias de Graduación, ITT",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/test-core.js"
+  },
+  "author": "Díaz Morales Katherine Giselle",
+  "license": "ISC",
+  "devDependencies": { "electron": "^31.0.0", "xlsx": "0.18.5" }
+}
